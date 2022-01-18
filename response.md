@@ -20,32 +20,44 @@
 
 ## 資料庫設計
 
-* 藥局(pharmacy)
-  * id
-  * name
-  * cashBalance
-  * openingHours
+### 資料表
 
-* 商品(mask)
-  * id
-  * name
+* Pharmacy
+  * Id
+  * Name
+  * CashBalance
+  * OpeningHours
 
-* 庫存(inventory)
-  * id
-  * pharmacyId
-  * maskId
-  * price
+* Mask
+  * Id
+  * Name
 
-* 使用者(user)
-  * id
-  * name
-  * cashBalance
+* Inventory
+  * Id
+  * PharmacyId
+  * MaskId
+  * Price
 
-* purchaseHistory(付款紀錄)
-  * pharmacyId
-  * maskId
-  * transactionAmount
-  * transactionDate
+* User
+  * Id
+  * Name
+  * CashBalance
+
+* PurchaseHistory
+  * PharmacyId
+  * MaskId
+  * TransactionAmount
+  * TransactionDate
+
+### 資料庫轉model指令
+
+Scaffold-DbContext "Server=localhost;Database=Pharmacy;User ID=sa;Password=taipay.mssql.5517;Trusted_Connection=True;Integrated Security=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models/pharmacy -DataAnnotations -Context Context  -UseDatabaseNames -CoNtextDir Data -force
+
+### 關聯圖
+![relationShip](https://i.imgur.com/LPkhcmB.png)
+
+
+
 
 
 

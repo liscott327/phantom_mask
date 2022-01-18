@@ -9,20 +9,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace phantom_mask.Models.pharmacy
 {
-    public partial class inventory
+    public partial class Inventory
     {
         [Key]
-        public int id { get; set; }
-        public int pharmacyId { get; set; }
-        public int maskId { get; set; }
+        public int Id { get; set; }
+        public int PharmacyId { get; set; }
+        public int MaskId { get; set; }
         [Column(TypeName = "decimal(8, 2)")]
-        public decimal price { get; set; }
+        public decimal Price { get; set; }
 
-        [ForeignKey(nameof(maskId))]
-        [InverseProperty("inventory")]
-        public virtual mask mask { get; set; }
-        [ForeignKey(nameof(pharmacyId))]
-        [InverseProperty("inventory")]
-        public virtual pharmacy pharmacy { get; set; }
+        [ForeignKey(nameof(MaskId))]
+        [InverseProperty("Inventory")]
+        public virtual Mask Mask { get; set; }
+        [ForeignKey(nameof(PharmacyId))]
+        [InverseProperty("Inventory")]
+        public virtual Pharmacy Pharmacy { get; set; }
     }
 }

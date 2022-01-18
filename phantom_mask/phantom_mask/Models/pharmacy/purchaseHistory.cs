@@ -9,26 +9,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace phantom_mask.Models.pharmacy
 {
-    public partial class purchaseHistory
+    public partial class PurchaseHistory
     {
         [Key]
-        public int id { get; set; }
-        public int userId { get; set; }
-        public int pharmacyId { get; set; }
-        public int maskId { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public int PharmacyId { get; set; }
+        public int MaskId { get; set; }
         [Column(TypeName = "decimal(8, 2)")]
-        public decimal transactionAmount { get; set; }
+        public decimal TransactionAmount { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime transactionDate { get; set; }
+        public DateTime TransactionDate { get; set; }
 
-        [ForeignKey(nameof(maskId))]
-        [InverseProperty("purchaseHistory")]
-        public virtual mask mask { get; set; }
-        [ForeignKey(nameof(pharmacyId))]
-        [InverseProperty("purchaseHistory")]
-        public virtual pharmacy pharmacy { get; set; }
-        [ForeignKey(nameof(userId))]
-        [InverseProperty("purchaseHistory")]
-        public virtual user user { get; set; }
+        [ForeignKey(nameof(MaskId))]
+        [InverseProperty("PurchaseHistory")]
+        public virtual Mask Mask { get; set; }
+        [ForeignKey(nameof(PharmacyId))]
+        [InverseProperty("PurchaseHistory")]
+        public virtual Pharmacy Pharmacy { get; set; }
+        [ForeignKey(nameof(UserId))]
+        [InverseProperty("PurchaseHistory")]
+        public virtual User User { get; set; }
     }
 }

@@ -9,22 +9,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace phantom_mask.Models.pharmacy
 {
-    public partial class mask
+    public partial class Mask
     {
-        public mask()
+        public Mask()
         {
-            inventory = new HashSet<inventory>();
-            purchaseHistory = new HashSet<purchaseHistory>();
+            Inventory = new HashSet<Inventory>();
+            PurchaseHistory = new HashSet<PurchaseHistory>();
         }
 
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
         [Required]
-        public string name { get; set; }
+        public string Name { get; set; }
 
-        [InverseProperty("mask")]
-        public virtual ICollection<inventory> inventory { get; set; }
-        [InverseProperty("mask")]
-        public virtual ICollection<purchaseHistory> purchaseHistory { get; set; }
+        [InverseProperty("Mask")]
+        public virtual ICollection<Inventory> Inventory { get; set; }
+        [InverseProperty("Mask")]
+        public virtual ICollection<PurchaseHistory> PurchaseHistory { get; set; }
     }
 }

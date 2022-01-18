@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace phantom_mask.Repositories
 {
-    public interface IPharmacyRepository : IBaseRepository<pharmacy>
+    public interface IPharmacyRepository : IBaseRepository<Pharmacy>
     {
 
     }
-    public class PharmacyRepository : BaseRepository<pharmacy>, IPharmacyRepository
+    public class PharmacyRepository : BaseRepository<Pharmacy>, IPharmacyRepository
     {
         private readonly IConfiguration _conf;
 
@@ -23,9 +23,9 @@ namespace phantom_mask.Repositories
             _conf = conf;
         }
 
-        public override pharmacy GetByID(int Id)
+        public override Pharmacy GetByID(int id)
         {
-            pharmacy r = _dbSet.SingleOrDefault(a => a.id == Id);
+            Pharmacy r = _dbSet.SingleOrDefault(a => a.Id == id);
             return r;
         }
 

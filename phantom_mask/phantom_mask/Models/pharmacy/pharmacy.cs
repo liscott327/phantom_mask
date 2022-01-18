@@ -9,25 +9,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace phantom_mask.Models.pharmacy
 {
-    public partial class pharmacy
+    public partial class Pharmacy
     {
-        public pharmacy()
+        public Pharmacy()
         {
-            inventory = new HashSet<inventory>();
-            purchaseHistory = new HashSet<purchaseHistory>();
+            Inventory = new HashSet<Inventory>();
+            PurchaseHistory = new HashSet<PurchaseHistory>();
         }
 
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
         [Required]
-        public string name { get; set; }
+        public string Name { get; set; }
         [Column(TypeName = "decimal(8, 0)")]
-        public decimal cashBalance { get; set; }
-        public string openingHours { get; set; }
+        public decimal CashBalance { get; set; }
+        public string OpeningHours { get; set; }
 
-        [InverseProperty("pharmacy")]
-        public virtual ICollection<inventory> inventory { get; set; }
-        [InverseProperty("pharmacy")]
-        public virtual ICollection<purchaseHistory> purchaseHistory { get; set; }
+        [InverseProperty("Pharmacy")]
+        public virtual ICollection<Inventory> Inventory { get; set; }
+        [InverseProperty("Pharmacy")]
+        public virtual ICollection<PurchaseHistory> PurchaseHistory { get; set; }
     }
 }

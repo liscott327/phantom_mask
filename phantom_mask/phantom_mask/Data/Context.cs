@@ -13,6 +13,7 @@ namespace phantom_mask.Data
     public partial class Context : DbContext
     {
         private string connectionString;
+
         public Context()
         {
         }
@@ -22,67 +23,68 @@ namespace phantom_mask.Data
         {
         }
 
-        public virtual DbSet<inventory> inventory { get; set; }
-        public virtual DbSet<mask> mask { get; set; }
-        public virtual DbSet<pharmacy> pharmacy { get; set; }
-        public virtual DbSet<purchaseHistory> purchaseHistory { get; set; }
-        public virtual DbSet<user> user { get; set; }
+        public virtual DbSet<Inventory> Inventory { get; set; }
+        public virtual DbSet<Mask> Mask { get; set; }
+        public virtual DbSet<Pharmacy> Pharmacy { get; set; }
+        public virtual DbSet<PurchaseHistory> PurchaseHistory { get; set; }
+        public virtual DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //資料庫來源
+                //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                //optionsBuilder.UseSqlServer("Server=localhost;Database=Pharmacy;User ID=sa;Password=taipay.mssql.5517;Trusted_Connection=True;Integrated Security=False;");
+
                 var builder = new ConfigurationBuilder();
                 builder.AddJsonFile("appsettings.json", optional: false);
 
                 var configuration = builder.Build();
 
-                connectionString = configuration.GetConnectionString("pharmacyConnContext").ToString();
+                connectionString = configuration.GetConnectionString("DatabaseConnection").ToString();
 
                 optionsBuilder.UseSqlServer(connectionString);
-
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<inventory>(entity =>
+            modelBuilder.Entity<Inventory>(entity =>
             {
-                entity.Property(e => e.id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.pharmacyId).ValueGeneratedOnAdd();
+                entity.Property(e => e.PharmacyId).ValueGeneratedOnAdd();
 
-                entity.HasOne(d => d.mask)
-                    .WithMany(p => p.inventory)
-                    .HasForeignKey(d => d.maskId)
+                entity.HasOne(d => d.Mask)
+                    .WithMany(p => p.Inventory)
+                    .HasForeignKey(d => d.MaskId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_inventory_mask1");
 
-                entity.HasOne(d => d.pharmacy)
-                    .WithMany(p => p.inventory)
-                    .HasForeignKey(d => d.pharmacyId)
+                entity.HasOne(d => d.Pharmacy)
+                    .WithMany(p => p.Inventory)
+                    .HasForeignKey(d => d.PharmacyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_inventory_pharmacy");
             });
 
-            modelBuilder.Entity<purchaseHistory>(entity =>
+            modelBuilder.Entity<PurchaseHistory>(entity =>
             {
-                entity.HasOne(d => d.mask)
-                    .WithMany(p => p.purchaseHistory)
-                    .HasForeignKey(d => d.maskId)
+                entity.HasOne(d => d.Mask)
+                    .WithMany(p => p.PurchaseHistory)
+                    .HasForeignKey(d => d.MaskId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_purchaseHistory_mask");
 
-                entity.HasOne(d => d.pharmacy)
-                    .WithMany(p => p.purchaseHistory)
-                    .HasForeignKey(d => d.pharmacyId)
+                entity.HasOne(d => d.Pharmacy)
+                    .WithMany(p => p.PurchaseHistory)
+                    .HasForeignKey(d => d.PharmacyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_purchaseHistory_pharmacy");
 
-                entity.HasOne(d => d.user)
-                    .WithMany(p => p.purchaseHistory)
-                    .HasForeignKey(d => d.userId)
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.PurchaseHistory)
+                    .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_purchaseHistory_user");
             });
 

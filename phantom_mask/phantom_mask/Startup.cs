@@ -20,18 +20,14 @@ namespace phantom_mask
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<Context>(options => options.UseSqlServer(
-                Configuration.GetConnectionString("DatabaseConnection"))
-                //options.UseSqlite(keepAliveConnection)
-            );
+        {            
             services.AddControllers();
 
+            services.AddDbContext<Context>(options => options.UseSqlServer(
+                Configuration.GetConnectionString("DatabaseConnection"))
+            //options.UseSqlite(keepAliveConnection)
+            );
             services.AddScoped<IPharmacyRepository, PharmacyRepository>();
-
-
-
-
 
         }
 
