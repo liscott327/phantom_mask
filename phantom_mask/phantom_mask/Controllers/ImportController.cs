@@ -66,7 +66,7 @@ namespace phantom_mask.Controllers
                     foreach (Good good in item.masks)
                     {
                         //如果有相同名稱的商品，僅寫入Investory，並帶MaskId
-                        Mask maskData = _mask.GetByFilter(x=>x.Name == good.name).FirstOrDefault();
+                        Mask maskData = _mask.GetByFilter(x => x.Name == good.name).FirstOrDefault();
                         if (maskData != null)
                         {
                             //寫入Investory
@@ -98,7 +98,7 @@ namespace phantom_mask.Controllers
                             };
                             _context.Inventory.Add(inventory);
                             _context.SaveChanges();
-                        }                        
+                        }
                     }
                 }
                 return "Import Pharmacy Data Success";
@@ -109,14 +109,52 @@ namespace phantom_mask.Controllers
             }
         }
 
-        [HttpPost("ImportUserData")]
-        public string ImportUserData(string jsonData)
+        [HttpPost("UserData")]
+        public string UserData(string jsonData)
         {
+            var userDataIsExisted = _user.GetAll().Any();
+            if (!userDataIsExisted)
+            {
+                List<Pharmacy> pharmacyData = _pharmacy.GetAll().ToList();
+                List<Mask> maskData = _mask.GetAll().ToList();
 
+                //json string轉object
+                List<Users> jsonObject = JsonConvert.DeserializeObject<List<Users>>(jsonData);
+                foreach (Users item in jsonObject)
+                {
+                    User user = new User
+                    {
+                        Name = item.name,
+                        CashBalance = item.cashBalance
+                    };
+                    _context.User.Add(user);
+                    _context.SaveChanges();
 
-            return "Import User Data Success";
+                    foreach (History history in item.purchaseHistories)
+                    {
+                        //TODO:if null
+                        int pharmacyId = pharmacyData.Where(x => x.Name == history.pharmacyName).FirstOrDefault().Id;
+                        int maskId = maskData.Where(x => x.Name == history.maskName).FirstOrDefault().Id;
+
+                        PurchaseHistory purchaseHistory = new PurchaseHistory
+                        {
+                            UserId = user.Id,
+                            PharmacyId = pharmacyId,
+                            MaskId = maskId,
+                            TransactionAmount = history.transactionAmount,
+                            TransactionDate = history.transactionDate
+                        };
+                        _context.PurchaseHistory.Add(purchaseHistory);
+                    }
+                    _context.SaveChanges();
+                }
+                return "Import User Data Success";
+            }
+            else
+            {
+                return "User Data is Existed";
+            }
         }
-
 
     }
 }
