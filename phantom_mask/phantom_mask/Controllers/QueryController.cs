@@ -117,7 +117,7 @@ namespace phantom_mask.Controllers
                 }
 
             }
-            var jsonString = JsonConvert.SerializeObject(result);
+            string jsonString = JsonConvert.SerializeObject(result);
 
             return jsonString;
         }
@@ -134,7 +134,7 @@ namespace phantom_mask.Controllers
         [HttpPost("GetGoodList")]
         public string GetGoodList([FromForm] string pharmacyName, [FromForm] string orderBy)
         {
-            var inventoryData = _inventory.GetAll()
+            List<Inventory> inventoryData = _inventory.GetAll()
                 .Include(x => x.Pharmacy)
                 .Include(x => x.Mask)
                 .Where(x => x.Pharmacy.Name == pharmacyName)
@@ -165,7 +165,7 @@ namespace phantom_mask.Controllers
                 };
                 result.Add(goodDetail);
             }
-            var jsonString = JsonConvert.SerializeObject(result);
+            string jsonString = JsonConvert.SerializeObject(result);
 
             return jsonString;
         }
@@ -223,7 +223,7 @@ namespace phantom_mask.Controllers
                     result.Add(transactionAmountRank);
                 }
             }
-            var jsonString = JsonConvert.SerializeObject(result);
+            string jsonString = JsonConvert.SerializeObject(result);
             return jsonString;
         }
 
@@ -258,7 +258,7 @@ namespace phantom_mask.Controllers
                     })
                     .ToList();
             }
-            var jsonString = JsonConvert.SerializeObject(result);
+            string jsonString = JsonConvert.SerializeObject(result);
             return jsonString;
         }
 
@@ -269,9 +269,6 @@ namespace phantom_mask.Controllers
         //{
         //    var maskData = _mask.GetAll();
         //    List<Pharmacy> pharmacyData = _pharmacy.GetAll().ToList();
-
-
-
         //    //var jsonString = JsonConvert.SerializeObject(result);
         //    var jsonString = "";
         //    return jsonString;
