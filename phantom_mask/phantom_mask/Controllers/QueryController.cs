@@ -223,5 +223,43 @@ namespace phantom_mask.Controllers
             var jsonString = JsonConvert.SerializeObject(result);
             return jsonString;
         }
+
+        /// <summary>
+        /// 查詢某日期區間所交易的口罩及交易總額
+        /// (The total amount of masks and dollar value of transactions that happened within a date range)
+        /// </summary>
+        /// <param name="startDate">起始日期</param>
+        /// <param name="endDate">結束日期</param>
+        /// <returns></returns>
+        [HttpPost("GetMaskTotalTransaction")]
+        public string GetMaskTotalTransaction([FromForm] DateTime startDate, [FromForm] DateTime endDate)
+        {
+            var purchaseHistoryData = _purchaseHistory.GetAll()
+                .Include(x => x.Mask)
+                .Where(x => x.TransactionDate >= startDate && x.TransactionDate <= endDate);
+            List<MaskTotalTransaction> result = new List<MaskTotalTransaction>();
+
+            if (purchaseHistoryData != null)
+            {
+                result = purchaseHistoryData
+                    .GroupBy(x => new
+                    {
+                        id = x.MaskId,
+                        name = x.Mask.Name,
+                    })
+                    .Select(a => new MaskTotalTransaction
+                    {
+                        MaskId = a.Key.id,
+                        Name = a.Key.name,
+                        TotalTransactionAmount = a.Sum(b => b.TransactionAmount),
+                    })
+                    .ToList();
+            }
+            var jsonString = JsonConvert.SerializeObject(result);
+            return jsonString;
+        }
+
+
+
     }
 }

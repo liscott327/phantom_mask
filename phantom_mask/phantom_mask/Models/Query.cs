@@ -22,5 +22,12 @@
             public string Name { get; set; }
             public decimal TotalTransactionAmount { get; set; }
         }
+
+        public class MaskTotalTransaction
+        {
+            public int MaskId { get; set; }
+            public string Name { get; set; }
+            public decimal TotalTransactionAmount { get; set; }
+        }
     }
 }
