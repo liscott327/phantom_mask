@@ -13,7 +13,6 @@ namespace phantom_mask.Data
     public partial class Context : DbContext
     {
         private string connectionString;
-
         public Context()
         {
         }
@@ -42,8 +41,6 @@ namespace phantom_mask.Data
                 var configuration = builder.Build();
 
                 connectionString = configuration.GetConnectionString("DatabaseConnection").ToString();
-
-                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 
@@ -51,10 +48,6 @@ namespace phantom_mask.Data
         {
             modelBuilder.Entity<Inventory>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.PharmacyId).ValueGeneratedOnAdd();
-
                 entity.HasOne(d => d.Mask)
                     .WithMany(p => p.Inventory)
                     .HasForeignKey(d => d.MaskId)

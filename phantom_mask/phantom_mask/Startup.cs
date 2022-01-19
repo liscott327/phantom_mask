@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using phantom_Inventory.Repositories;
 using phantom_mask.Data;
 using phantom_mask.Repositories;
 
@@ -28,7 +29,10 @@ namespace phantom_mask
             //options.UseSqlite(keepAliveConnection)
             );
             services.AddScoped<IPharmacyRepository, PharmacyRepository>();
-
+            services.AddScoped<IMaskRepository, MaskRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPurchaseHistoryRepository, PurchaseHistoryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
