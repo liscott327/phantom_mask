@@ -207,6 +207,9 @@ namespace phantom_mask.Controllers
                     .OrderByDescending(y => y.TotalTransactionAmount)
                     .ToList();
 
+                //若要顯示的數量超過查詢結果的資料數
+                resultCount = resultCount > purchaseHistoryData.Count() ? purchaseHistoryData.Count() : resultCount;
+
                 for (int i = 0; i < resultCount; i++)
                 {
                     var item = calcTransactionAmount[i];
@@ -257,6 +260,77 @@ namespace phantom_mask.Controllers
             }
             var jsonString = JsonConvert.SerializeObject(result);
             return jsonString;
+        }
+
+
+        //Search for pharmacies or masks by name, ranked by relevance to search term
+
+        //public string SearchName(string keyword)
+        //{
+        //    var maskData = _mask.GetAll();
+        //    List<Pharmacy> pharmacyData = _pharmacy.GetAll().ToList();
+
+
+
+        //    //var jsonString = JsonConvert.SerializeObject(result);
+        //    var jsonString = "";
+        //    return jsonString;
+        //}
+
+
+        /// <summary>
+        /// Process a user purchases a mask from a pharmacy, and handle all relevant data changes in an atomic transaction
+        /// </summary>
+        /// <param name="userName">使用者名稱(購買人)</param>
+        /// <param name="pharmacyName">藥局名稱</param>
+        /// <param name="maskName">口罩名稱</param>
+        /// <returns></returns>
+        [HttpPost("Purchase")]
+        public string Purchase([FromForm] string userName, [FromForm] string pharmacyName, [FromForm] string maskName)
+        {
+            if (string.IsNullOrEmpty(userName) == true || string.IsNullOrEmpty(pharmacyName) == true || string.IsNullOrEmpty(maskName) == true)
+            {
+                return "錯誤，尚有欄位未填寫";
+            }
+
+            User user = _user.GetByFilter(x => x.Name == userName).FirstOrDefault();
+            if (user == null)
+            {
+                return "錯誤，無法找到該user";
+            }
+
+            Inventory inventoryData = _inventory.GetAll()
+                .Include(x => x.Pharmacy)
+                .Include(x => x.Mask)
+                .Where(x => x.Pharmacy.Name == pharmacyName && x.Mask.Name == maskName)
+                .FirstOrDefault();
+            if (inventoryData == null)
+            {
+                return "錯誤，無法找到該藥局販售此項目";
+            }
+
+            //更新user
+            user.CashBalance = user.CashBalance - inventoryData.Price;
+            _user.Update(user);
+            _user.Save();
+
+            //更新pharmacy
+            inventoryData.Pharmacy.CashBalance = inventoryData.Pharmacy.CashBalance + inventoryData.Price;
+            _pharmacy.Update(inventoryData.Pharmacy);
+            _pharmacy.Save();
+
+            //寫入purchaseHistory
+            PurchaseHistory purchaseHistory = new PurchaseHistory()
+            {
+                UserId = user.Id,
+                PharmacyId = inventoryData.PharmacyId,
+                MaskId = inventoryData.MaskId,
+                TransactionAmount = inventoryData.Price
+            };
+            _purchaseHistory.Add(purchaseHistory);
+            _purchaseHistory.Save();
+
+            return "付款成功";
         }
 
 

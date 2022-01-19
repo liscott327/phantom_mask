@@ -11,6 +11,11 @@ namespace phantom_mask.Models.pharmacy
 {
     public partial class PurchaseHistory
     {
+        public PurchaseHistory()
+        {
+            this.TransactionDate = DateTime.Now;
+        }
+
         [Key]
         public int Id { get; set; }
         public int UserId { get; set; }

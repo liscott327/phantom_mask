@@ -19,7 +19,7 @@ namespace phantom_mask.Repositories
         public ReplyCode Save();        // this function probably isn't needed, b/c SaveChanges is in Context, not the specific table
         public IQueryable<T> GetAll();
         public IQueryable<T> GetByFilter(Expression<Func<T, bool>> filter, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string[] include = null);
-        //public ReplyCode Add(T obj);
+        public ReplyCode Add(T obj);
         public T GetByID(int id);
         //public List<T> Paging(List<T> model, PadingModel paging);
         public string ConcatenatedString(string[] Params);
