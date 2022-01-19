@@ -126,6 +126,7 @@ namespace phantom_mask.Controllers
 
         /// <summary>
         /// 用藥局名稱查詢該店所有口罩
+        /// (List all masks that are sold by a given pharmacy, sorted by mask name or mask price)
         /// </summary>
         /// <param name="pharmacyName">藥局名稱</param>
         /// <param name="orderBy">排序項目</param>
@@ -159,8 +160,8 @@ namespace phantom_mask.Controllers
                 GoodDetail goodDetail = new GoodDetail()
                 {
                     Id = item.MaskId,
-                    Name=item.Mask.Name,
-                    Price=item.Price,
+                    Name = item.Mask.Name,
+                    Price = item.Price,
                 };
                 result.Add(goodDetail);
             }
@@ -169,5 +170,58 @@ namespace phantom_mask.Controllers
             return jsonString;
         }
 
+        //列出在一個價格範圍內擁有多於或少於 x 個面膜產品的所有藥店
+
+        /// <summary>
+        /// 查詢日期範圍內交易總額排名前x名使用者
+        /// (The top x users by total transaction amount of masks within a date range)
+        /// </summary>
+        /// <param name="startDate">起始日期</param>
+        /// <param name="endDate">結束日期</param>
+        /// <param name="resultCount">顯示前幾項資料</param>
+        /// <returns></returns>
+        [HttpPost("GetTopOfTransaction")]
+
+        public string GetTopOfTransaction([FromForm] DateTime startDate, [FromForm] DateTime endDate, [FromForm] int resultCount)
+        {
+            var purchaseHistoryData = _purchaseHistory.GetAll()
+                .Include(x => x.User)
+                .Where(x => x.TransactionDate >= startDate && x.TransactionDate <= endDate);
+
+            List<TransactionAmountRank> result = new List<TransactionAmountRank>();
+
+            if (purchaseHistoryData != null)
+            {
+                var calcTransactionAmount = purchaseHistoryData
+                    .GroupBy(x => new
+                    {
+                        id = x.User.Id,
+                        name = x.User.Name,
+                    })
+                    .Select(a => new
+                    {
+                        Id = a.Key.id,
+                        Name = a.Key.name,
+                        TotalTransactionAmount = a.Sum(b => b.TransactionAmount),
+                    })
+                    .OrderByDescending(y => y.TotalTransactionAmount)
+                    .ToList();
+
+                for (int i = 0; i < resultCount; i++)
+                {
+                    var item = calcTransactionAmount[i];
+
+                    TransactionAmountRank transactionAmountRank = new TransactionAmountRank()
+                    {
+                        UserId = item.Id,
+                        Name = item.Name,
+                        TotalTransactionAmount = item.TotalTransactionAmount
+                    };
+                    result.Add(transactionAmountRank);
+                }
+            }
+            var jsonString = JsonConvert.SerializeObject(result);
+            return jsonString;
+        }
     }
 }

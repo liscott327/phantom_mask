@@ -15,5 +15,12 @@
             public string Name { get; set; }
             public decimal Price { get; set; }
         }
+
+        public class TransactionAmountRank
+        {
+            public int UserId { get; set; }
+            public string Name { get; set; }
+            public decimal TotalTransactionAmount { get; set; }
+        }
     }
 }
