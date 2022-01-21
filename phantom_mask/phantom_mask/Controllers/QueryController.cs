@@ -53,34 +53,19 @@ namespace phantom_mask.Controllers
         /// <summary>
         /// 列出特定時間有開放的藥局
         /// </summary>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
-        /// <param name="weekDay"></param>
+        /// <param name="startTime">開始時間ex.09:16</param>
+        /// <param name="endTime">結束時間ex.03:27</param>
+        /// <param name="weekDay">星期幾ex.Sat</param>
         /// <returns></returns>
         [HttpPost("GetPharmacyList")]
         public string GetPharmacyList([FromForm] string startTime, [FromForm] string endTime, [FromForm] string weekDay)
         {
             List<Pharmacy> pharmacyData = _pharmacy.GetAll().ToList();
             List<Store> result = new List<Store>();
-            foreach (Pharmacy item in pharmacyData)
+            if (weekDay != null && startTime != null && endTime != null)
             {
-                //將openHours解析出來
-                string[] stringArray = item.OpeningHours.Split(" / ");
-                foreach (var timeStr in stringArray)
+                foreach (Pharmacy item in pharmacyData)
                 {
-                    var t = timeStr.Replace(" ", "");
-                    //切時間(由後往前11字)
-                    string timeRang = t.Substring(t.Length - 11, 11);
-                    string[] time = timeRang.Split("-");
-
-                    //切星期
-                    string weekDayStr = t.Split(timeRang).FirstOrDefault();
-                    //Wed、Tue-Fri、Sun,Mon
-                    //區間
-                    var weekDayRange = weekDayStr.Contains("-") == true ? weekDayStr.Split("-") : null;
-                    //個別天
-                    var weekDays = weekDayStr.Contains(",") == true ? weekDayStr.Split(",") : null;
-
                     Store store = new Store()
                     {
                         Id = item.Id,
@@ -88,38 +73,225 @@ namespace phantom_mask.Controllers
                         OpeningHours = item.OpeningHours
                     };
 
-                    //TODO:需完成判斷
-                    if (startTime != null && endTime != null)
+                    //將openHours解析出來
+                    string[] stringArray = item.OpeningHours.Split(" / ");
+                    foreach (var timeStr in stringArray)
                     {
-                        if (DateTime.Parse(time[0]) <= DateTime.Parse(startTime) && DateTime.Parse(time[1]) >= DateTime.Parse(endTime))
+                        var t = timeStr.Replace(" ", "");
+                        //切時間(由後往前11字)
+                        string timeRang = t.Substring(t.Length - 11, 11);
+                        string[] time = timeRang.Split("-");
+
+                        //切星期
+                        string weekDayStr = t.Split(timeRang).FirstOrDefault();
+                        //Wed、Tue-Fri、Sun,Mon
+                        //區間
+                        string[] weekDayRange = weekDayStr.Contains("-") == true ? weekDayStr.Split("-") : null;
+                        //個別天
+                        string[] weekDays = weekDayStr.Contains(",") == true ? weekDayStr.Split(",") : null;
+
+                        //若3個參數都有填
+                        if (weekDay != null && startTime != null && endTime != null)
                         {
-                            result.Add(store);
+
+                            bool passTimeQuery = false;            //通過時間區間查詢
+                            bool passWeekDayQuery = false;         //通過星期幾查詢
+                                                                   //判斷時間區間
+                            if (startTime != null && endTime != null)
+                            {
+                                if (DateTime.Parse(time[0]) <= DateTime.Parse(startTime) && DateTime.Parse(time[1]) >= DateTime.Parse(endTime))
+                                {
+                                    passTimeQuery = true;
+                                }
+                            }
+
+                            int queryWeekDay = TransWeekDayToNum(weekDay);              //查詢的星期幾
+                                                                                        //判斷區間類型
+                            if (weekDayRange != null)
+                            {
+                                //先將英文星期轉成數字比較
+                                int startWeekDay = TransWeekDayToNum(weekDayRange[0]);
+                                int endWeekDay = TransWeekDayToNum(weekDayRange[1]);
+
+                                if (startWeekDay <= queryWeekDay && endWeekDay >= queryWeekDay)
+                                {
+                                    passWeekDayQuery = true;
+                                }
+                            }
+                            //陣列類型
+                            if (weekDays != null)
+                            {
+                                foreach (var day in weekDays)
+                                {
+                                    if (day == weekDay)
+                                    {
+                                        passWeekDayQuery = true;
+                                    }
+                                }
+                            }
+                            //單一天類型
+                            if (TransWeekDayToNum(weekDayStr) == queryWeekDay)
+                            {
+                                passWeekDayQuery = true;
+                            }
+
+                            //判斷時間區間
+                            if (startTime != null && endTime != null)
+                            {
+                                if (DateTime.Parse(time[0]) <= DateTime.Parse(startTime) && DateTime.Parse(time[1]) >= DateTime.Parse(endTime))
+                                {
+                                    passTimeQuery = true;
+                                }
+                            }
+
+                            if (passWeekDayQuery == true && passTimeQuery == true)
+                            {
+                                result.Add(store);
+                            }
+                        }                       
+                    }
+                }
+            }
+            else if (startTime != null && endTime != null)
+            {
+                foreach (Pharmacy item in pharmacyData)
+                {
+                    Store store = new Store()
+                    {
+                        Id = item.Id,
+                        Name = item.Name,
+                        OpeningHours = item.OpeningHours
+                    };
+
+                    //將openHours解析出來
+                    string[] stringArray = item.OpeningHours.Split(" / ");
+                    foreach (var timeStr in stringArray)
+                    {
+                        var t = timeStr.Replace(" ", "");
+                        //切時間(由後往前11字)
+                        string timeRang = t.Substring(t.Length - 11, 11);
+                        string[] time = timeRang.Split("-");
+
+                        //判斷時間區間
+                        if (startTime != null && endTime != null)
+                        {
+                            if (DateTime.Parse(time[0]) <= DateTime.Parse(startTime) && DateTime.Parse(time[1]) >= DateTime.Parse(endTime))
+                            {
+                                result.Add(store);
+                            }
                         }
                     }
-
-                    if (weekDay != null)
+                }
+            }
+            else if (weekDay != null)
+            {
+                foreach (Pharmacy item in pharmacyData)
+                {
+                    Store store = new Store()
                     {
+                        Id = item.Id,
+                        Name = item.Name,
+                        OpeningHours = item.OpeningHours
+                    };
+
+                    //將openHours解析出來
+                    string[] stringArray = item.OpeningHours.Split(" / ");
+                    foreach (var timeStr in stringArray)
+                    {
+                        var t = timeStr.Replace(" ", "");
+                        //切時間(由後往前11字)
+                        string timeRang = t.Substring(t.Length - 11, 11);
+                        string[] time = timeRang.Split("-");
+
+                        //切星期
+                        string weekDayStr = t.Split(timeRang).FirstOrDefault();
+                        //Wed、Tue-Fri、Sun,Mon
+                        //區間
+                        string[] weekDayRange = weekDayStr.Contains("-") == true ? weekDayStr.Split("-") : null;
+                        //個別天
+                        string[] weekDays = weekDayStr.Contains(",") == true ? weekDayStr.Split(",") : null;
+
+                        bool passWeekDayQuery = false;         //通過星期幾查詢
+                        //判斷
+                        int queryWeekDay = TransWeekDayToNum(weekDay);              //查詢的星期幾
+                                                                                    //判斷區間類型
                         if (weekDayRange != null)
                         {
+                            //先將英文星期轉成數字比較
+                            int startWeekDay = TransWeekDayToNum(weekDayRange[0]);
+                            int endWeekDay = TransWeekDayToNum(weekDayRange[1]);
 
+                            if (startWeekDay <= queryWeekDay && endWeekDay >= queryWeekDay)
+                            {
+                                passWeekDayQuery = true;
+                            }
                         }
+                        //陣列類型
                         if (weekDays != null)
                         {
                             foreach (var day in weekDays)
                             {
                                 if (day == weekDay)
                                 {
-                                    result.Add(store);
+                                    passWeekDayQuery = true;
                                 }
                             }
                         }
+                        //單一天類型
+                        if (TransWeekDayToNum(weekDayStr) == queryWeekDay)
+                        {
+                            passWeekDayQuery = true;
+                        }
+
+                        if (passWeekDayQuery == true)
+                        {
+                            result.Add(store);
+                        }
                     }
                 }
-
             }
-            string jsonString = JsonConvert.SerializeObject(result);
+            else
+            {
+                return "參數有誤";
+            }
 
+            string jsonString = JsonConvert.SerializeObject(result);
             return jsonString;
+        }
+
+        /// <summary>
+        /// 轉星期簡寫英文為數字
+        /// </summary>
+        /// <param name="weekDay"></param>
+        /// <returns></returns>
+        public int TransWeekDayToNum(string weekDay)
+        {
+            int dayNum = 0;
+            switch (weekDay)
+            {
+                case "Mon":
+                    dayNum = 1;
+                    break;
+                case "Tue":
+                    dayNum = 2;
+                    break;
+                case "Wed":
+                    dayNum = 3;
+                    break;
+                case "Thu":
+                    dayNum = 4;
+                    break;
+                case "Fri":
+                    dayNum = 5;
+                    break;
+                case "Sat":
+                    dayNum = 6;
+                    break;
+                case "Sun":
+                    dayNum = 7;
+                    break;
+            }
+            return dayNum;
         }
 
 
@@ -262,17 +434,55 @@ namespace phantom_mask.Controllers
             return jsonString;
         }
 
-
-        //Search for pharmacies or masks by name, ranked by relevance to search term
-
-        //public string SearchName(string keyword)
-        //{
-        //    var maskData = _mask.GetAll();
-        //    List<Pharmacy> pharmacyData = _pharmacy.GetAll().ToList();
-        //    //var jsonString = JsonConvert.SerializeObject(result);
-        //    var jsonString = "";
-        //    return jsonString;
-        //}
+        /// <summary>
+        /// Search for pharmacies or masks by name, ranked by relevance to search term
+        /// </summary>
+        /// <param name="searchBy">查詢類型</param>
+        /// <param name="keyword">查詢名稱</param>
+        /// <returns></returns>
+        [HttpPost("SearchName")]
+        public string SearchName([FromForm] string searchBy, [FromForm] string keyword)
+        {
+            if (string.IsNullOrEmpty(searchBy) == true)
+            {
+                return "尚未填寫查詢類型";
+            }
+            List<SearchResult> result = new List<SearchResult>();
+            if (searchBy == "mask")
+            {
+                List<Mask> maskData = _mask.GetByFilter(x => x.Name.ToUpper().Contains(keyword.ToUpper())).ToList();
+                if (maskData != null)
+                {
+                    foreach (Mask item in maskData)
+                    {
+                        SearchResult searchResult = new SearchResult()
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                        };
+                        result.Add(searchResult);
+                    };
+                }
+            }
+            else
+            {
+                List<Pharmacy> pharmacyData = _pharmacy.GetByFilter(x => x.Name.ToUpper().Contains(keyword.ToUpper())).ToList();
+                if (pharmacyData != null)
+                {
+                    foreach (Pharmacy item in pharmacyData)
+                    {
+                        SearchResult searchResult = new SearchResult()
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                        };
+                        result.Add(searchResult);
+                    };
+                }
+            }
+            string jsonString = JsonConvert.SerializeObject(result);
+            return jsonString;
+        }
 
 
         /// <summary>

@@ -29,5 +29,11 @@
             public string Name { get; set; }
             public decimal TotalTransactionAmount { get; set; }
         }
+
+        public class SearchResult
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
     }
 }

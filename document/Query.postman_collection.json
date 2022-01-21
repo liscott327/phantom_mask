@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "c7f58488-82bc-4339-baee-8aee2f816904",
+		"name": "Query",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetPharmacyList",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "startTime",
+							"value": "03:27",
+							"description": "起始時間",
+							"type": "default"
+						},
+						{
+							"key": "endTime",
+							"value": "09:16",
+							"description": "結束時間",
+							"type": "text"
+						},
+						{
+							"key": "weekDay",
+							"value": "Sat",
+							"description": "星期幾",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/GetPharmacyList",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"GetPharmacyList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetGoodList",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pharmacyName",
+							"value": "Pride Pharmacy",
+							"description": "藥局名稱",
+							"type": "default"
+						},
+						{
+							"key": "orderBy",
+							"value": "price",
+							"description": "排序項目(name、price)",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/GetGoodList",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"GetGoodList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SearchName",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "searchBy",
+							"value": "mask",
+							"description": "查詢類型",
+							"type": "default"
+						},
+						{
+							"key": "keyword",
+							"value": "MaskT",
+							"description": "查詢名稱",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/SearchName",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"SearchName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTopOfTransaction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "startDate",
+							"value": "2021-01-09 00:00:00",
+							"description": "起始日期",
+							"type": "default"
+						},
+						{
+							"key": "endDate",
+							"value": "2021-01-20 23:59:59",
+							"description": "結束日期",
+							"type": "text"
+						},
+						{
+							"key": "resultCount",
+							"value": "5",
+							"description": "顯示前幾項資料",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/GetTopOfTransaction",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"GetTopOfTransaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetMaskTotalTransaction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "startDate",
+							"value": "2021-01-09 00:00:00",
+							"description": "起始日期",
+							"type": "default"
+						},
+						{
+							"key": "endDate",
+							"value": "2021-01-20 23:59:59",
+							"description": "結束日期",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/GetMaskTotalTransaction",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"GetMaskTotalTransaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "userName",
+							"value": "Sherri Lynch",
+							"description": "使用者名稱(購買人)",
+							"type": "default"
+						},
+						{
+							"key": "pharmacyName",
+							"value": "Discount Drugs",
+							"description": "藥局名稱",
+							"type": "text"
+						},
+						{
+							"key": "maskName",
+							"value": "Free to Roam (black) (6 per pack)",
+							"description": "口罩名稱",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/Query/Purchase",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"Query",
+						"Purchase"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
