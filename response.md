@@ -1,4 +1,11 @@
 # Response
+## 建立方式
+1. 先用下方指令建立SQL server資料表
+2. 啟動程式修改`appsetting.json`中連線字串部分的密碼
+3. 匯入測試資料到postman
+4. 執行程式
+5. postman執行Import中的依序`匯入PharmacyData`、`匯入UserData`
+6. postman執行query中題目指定功能
 
 ## 資料庫設計
 
